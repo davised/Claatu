@@ -1,21 +1,21 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 
-# Claatu::count_tree -Construct clade lookup tables 
-#Copyright (C) 2016  Christopher A. Gaulke 
+# Claatu::count_tree -Construct clade lookup tables
+#Copyright (C) 2016  Christopher A. Gaulke
 #author contact: gaulkec@science.oregonstate.edu
 #
 #This program is free software: you can redistribute it and/or modify
 #it under the terms of the GNU General Public License as published by
 #the Free Software Foundation, either version 3 of the License, or
 #(at your option) any later version.
-#    
+#
 #This program is distributed in the hope that it will be useful,
 #but WITHOUT ANY WARRANTY; without even the implied warranty of
 #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #GNU General Public License for more details.
-#    
+#
 #You should have received a copy of the GNU General Public License
-#along with this program (see LICENSE.txt).  If not, see 
+#along with this program (see LICENSE.txt).  If not, see
 #<http://www.gnu.org/licenses/>
 
 ####################
@@ -25,7 +25,7 @@
 #   |         |    #
 #    |_______|     #
 #                  #
-####################  
+####################
 
 ###################
 #                 #
@@ -70,10 +70,10 @@ def BiomTabParser(biom):
 	"This function parses a biom file (closed ref OTUS) in tab delim format and creates a dictionary of samples by OTU by count"
 	"""Columns of the table should be samples and rows should be OTUs
 	should ignore lines until matching a line #OTU"""
-	#set pattern	
+	#set pattern
 	my_pattern = re.compile('\#OTU')
 	#read in biom table line by line
-	biom_dict = {} 
+	biom_dict = {}
 	my_header = ""
 	with open(biom) as f:
 		for line in f:
@@ -90,7 +90,7 @@ def BiomTabParser(biom):
 				temp = line.split("\t")
 				for i in range(1,len(temp)):
 					biom_dict[my_header[i]][temp[0]] = temp[i]
-				
+
 	return biom_dict
 
 def PermuteBiomLabels(biom_dict):
@@ -101,8 +101,8 @@ def PermuteBiomLabels(biom_dict):
 		ndict[sample]={}
 		for otu in biom_dict[sample]:
 			ndict[sample][otu] = 0
-	
-	for sample in biom_dict:		
+
+	for sample in biom_dict:
 		#total = sum(biom_dict[sample].itervalues())
 		total=0
 		for otu in biom_dict[sample]:
@@ -113,7 +113,7 @@ def PermuteBiomLabels(biom_dict):
 		while total > 0:
 			mykey = keys[randint(0,lk)]
 			ndict[sample][mykey] += 1
-			total -= 1  
+			total -= 1
 	return ndict
 
 def PermuteSampleLabels(biom_dict):
@@ -128,14 +128,14 @@ def PermuteSampleLabels(biom_dict):
 		for otu in biom_dict[sample]:
 			ndict[sample][otu] = my_vals.pop()
 	return ndict
-			
+
 def TipAncestorLookup(tree):
 	"This function makes a dictionary of the ancestors of each node"
 	node_it = tree.leaf_node_iter()
 	tip_ancestors = {}
 	#make an iterator for each node and append each ancestor to a list(vals)
 	for node in node_it:
-		ancest_it = node.ancestor_iter(inclusive=False) #get iter for all ancestors	
+		ancest_it = node.ancestor_iter(inclusive=False) #get iter for all ancestors
 		vals = []
 		for ancestor in ancest_it:
 			vals.append(str(ancestor.label))
@@ -143,16 +143,16 @@ def TipAncestorLookup(tree):
 		tip = tip.strip('\'')
 		tip_ancestors[tip] = vals
 	return tip_ancestors
-					
+
 def AncestorCrawl(ancestors, pbiom):
 	"This functions collects a list of ancestors of each OTU from a reference tree and assigns the count value of each OTU to the ancestor"
-	"""If there are values in the slot already this function will sum the value"""	
+	"""If there are values in the slot already this function will sum the value"""
 	ancestors = ancestors
 	#Initialize the dict
 	cml_nodes = {}
 	for sample in pbiom:
 		cml_nodes[sample] = {}
-	
+
 	for sample in pbiom:
 		for otu in pbiom[sample]:
 			if otu in ancestors: #problem begins here
@@ -160,9 +160,9 @@ def AncestorCrawl(ancestors, pbiom):
 					if ant in cml_nodes[sample]:
 						cml_nodes[sample][ant] += float(pbiom[sample][otu])
 					else:
-						cml_nodes[sample][ant] = 0 
+						cml_nodes[sample][ant] = 0
 						cml_nodes[sample][ant] += float(pbiom[sample][otu])
-	
+
 	return cml_nodes
 
 def CalculateCoreness(cml_nodes):
@@ -181,10 +181,10 @@ def CalculateCoreness(cml_nodes):
 	for key in core_dict.keys():
 		core_dict[key] = (float(core_dict[key]) / len(sample_keys))
 	return core_dict
-			  
+
 def MakeTable(perm_dict, perms, out_fp):
 	"this will make a table from combined actual and random coreness data"
-	#make a pretty(ish) table 
+	#make a pretty(ish) table
 	my_range = range(1,perms+1)
 	my_col_header = ["exp_values"]
 	for i in my_range:
@@ -198,11 +198,11 @@ def MakeTable(perm_dict, perms, out_fp):
 		print >> f1, "%s\t" % otu,
 		print >> f1, "\t".join("%4.3f" % x for x in perm_dict[otu]),
 		print >> f1, "\n",
-	
+
 	f1.close()
 	return None
 
-def RunIter(biom_fp, perms, tree, out_fp, method): 
+def RunIter(biom_fp, perms, tree, out_fp, method):
 	"runs the p-test"
 	my_biom = BiomTabParser(biom_fp)
 	tip_an_dict = TipAncestorLookup(tree)
@@ -230,10 +230,10 @@ def RunIter(biom_fp, perms, tree, out_fp, method):
 			core_dict = CalculateCoreness(cml_node_dict)
 			for otu in core_dict:
 				perm_dict[otu].append(core_dict[otu])
-	
+
 	MakeTable(perm_dict, perms, out_fp)
 	Ztest(perm_dict, out_fp)
-	return None 
+	return None
 
 #need to make a function that will parse a mapping file
 
@@ -251,7 +251,7 @@ def ParseMap(map):
 				mdict[elem[1]].append(elem[0])
 			else:
 				mdict[elem[1]] =[]
-				mdict[elem[1]].append(elem[0])				
+				mdict[elem[1]].append(elem[0])
 	return(mdict)
 
 
@@ -291,11 +291,11 @@ def RunGroupIter(biom_fp, perms, tree, out_fp, method, map):
 	#use the real coreness dictionary keys to make a dictionary for permutations
 	perm_dict = {}
 	nperms = perms
-	
+
 	for group in real_core_dict:
 		for clade in real_core_dict[group]:
 			perm_dict['_'.join([clade,group])] = [real_core_dict[group][clade]]
-	
+
 	#now do the permutations
 	if method == "samples":
 		while nperms > 0:
@@ -317,31 +317,31 @@ def RunGroupIter(biom_fp, perms, tree, out_fp, method, map):
 					perm_dict['_'.join([clade,group])].append(core_dict[group][clade])
 	MakeTable(perm_dict, perms, out_fp)
 	Ztest(perm_dict, out_fp)
-	return None	 
+	return None
 
 def Ztest(perm_dict, out_fp):
 	"this calculate a zscore and zstat from perm_dict values"
 	#Print out ztest results
 	#Columns are 1) exp coreness 2) Permutation mean 3) Perm sd 4) clade zscore 5) pval
-	out_file = out_fp + "_stats.txt" 
+	out_file = out_fp + "_stats.txt"
 	f1 = open(out_file, 'w+')
 	for otu in perm_dict:
 		exp = perm_dict[otu][0] # observed coreness
-		m = mean(perm_dict[otu][1:]) # mean perms 
+		m = mean(perm_dict[otu][1:]) # mean perms
 		s = sd(perm_dict[otu][1:]) # standard deviation perms
-		if s == 0: # might need to develop a different solution for this. 
+		if s == 0: # might need to develop a different solution for this.
 			z = 1
 			p = norm.sf(z) #upper tail of cumulative probability distribution
 			print >> f1, "%s\t" % otu,
 			print >> f1, "\t".join("%.2E" % x for x in [exp,m,s,z,p]), #join stats and print
-			print >> f1, "\n",	
-		else: 
+			print >> f1, "\n",
+		else:
 			z = (float(exp) - float(m)) / float(s) #zscore
 			p = norm.sf(z) #upper tail of cumulative probability distribution
 			print >> f1, "%s\t" % otu,
 			#print >> f1, "\t".join("%4.3f" % x for x in [exp,m,s,z,p]), #join stats and print
 			print >> f1, "\t".join("%.2E" % x for x in [exp,m,s,z,p]), #join stats and print
-			print >> f1, "\n",	
+			print >> f1, "\n",
 	f1.close()
 	return None
 
@@ -350,5 +350,5 @@ if map == None:
 	RunIter(biom_fp, perms, tree1, out_fp, method)
 else:
 	RunGroupIter(biom_fp, perms, tree1, out_fp, method, map)
-	
+
 

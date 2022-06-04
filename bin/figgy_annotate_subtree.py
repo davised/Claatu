@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 
 # Claatu::figgy_annotate_subtree -Make annotation file for figtree 
 #Copyright (C) 2015  Christopher A. Gaulke 

@@ -1,21 +1,21 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 
-# Claatu::annotate_subtree -Subtree annotation 
-#Copyright (C) 2015  Christopher A. Gaulke 
+# Claatu::annotate_subtree -Subtree annotation
+#Copyright (C) 2015  Christopher A. Gaulke
 #author contact: gaulkec@science.oregonstate.edu
 #
 #This program is free software: you can redistribute it and/or modify
 #it under the terms of the GNU General Public License as published by
 #the Free Software Foundation, either version 3 of the License, or
 #(at your option) any later version.
-#    
+#
 #This program is distributed in the hope that it will be useful,
 #but WITHOUT ANY WARRANTY; without even the implied warranty of
 #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #GNU General Public License for more details.
-#    
+#
 #You should have received a copy of the GNU General Public License
-#along with this program (see LICENSE.txt).  If not, see 
+#along with this program (see LICENSE.txt).  If not, see
 #<http://www.gnu.org/licenses/>
 
 ####################
@@ -25,7 +25,7 @@
 #   |         |    #
 #    |_______|     #
 #                  #
-####################  
+####################
 
 #########################
 #                       #
@@ -45,7 +45,7 @@ parser.add_argument("biom_fp", help="file path to the biom table to be used.")
 parser.add_argument("tree_fp", help="file path to the tree to be used.")
 parser.add_argument("out_fp", help="file path and suffix for out files. No extension needed.")
 #parser.add_argument("node_list_fp", help="file path to the node list for the nodes that make subtrees to be annotated.")
-parser.add_argument("-s", default = None, help="A list of species (one per line) used to restrict analyses.") 
+parser.add_argument("-s", default = None, help="A list of species (one per line) used to restrict analyses.")
 args = parser.parse_args()
 
 biom_fp = args.biom_fp
@@ -56,7 +56,7 @@ species_fp = args.s
 
 tree1 = dendropy.Tree.get(path = "{0}".format(tree_fp), schema = "newick")
 
-#this needs work could require a specific mapping file of colors to samples but would rather not 
+#this needs work could require a specific mapping file of colors to samples but would rather not
 
 my_colors =["#283435",
 "#75E43A",
@@ -110,10 +110,10 @@ def BiomTabParser(biom):
 	"This function parses a biom file (closed ref OTUS) in tab delim format and creates a dictionary of samples by OTU by count"
 	"""Columns of the table should be samples and rows should be OTUs
 	should ignore lines until matching a line #OTU"""
-	#set pattern	
+	#set pattern
 	my_pattern = re.compile('\#OTU')
 	#read in biom table line by line
-	biom_dict = {} 
+	biom_dict = {}
 	my_header = ""
 	with open(biom) as f:
 		for line in f:
@@ -129,7 +129,7 @@ def BiomTabParser(biom):
 				line = line.rstrip()
 				temp = line.split("\t")
 				for i in range(1,len(temp)):
-					biom_dict[my_header[i]][temp[0]] = temp[i]		
+					biom_dict[my_header[i]][temp[0]] = temp[i]
 	return biom_dict
 
 def MakeColorDict(biom_dict, species_fp):
@@ -180,14 +180,14 @@ def MakeDescendantDict(tree, species_fp, biom_dict):
 		else:
 			continue
 	return des_dict
-	
+
 def MakeTipMetaData(des_dict, col_dict):
 	"Assigns metadata based on the presence of only one species at a give tip"
 	ann_dict = {}
 	for tip in des_dict:
 		color = ""
 		set = ""
-		count = 0 
+		count = 0
 		for sp in des_dict[tip]:
 			if des_dict[tip][sp] == 1:
 				count += 1
@@ -203,7 +203,7 @@ def MakeTipMetaData(des_dict, col_dict):
 			color = "black"
 		ann_dict[tip] = color
 	return ann_dict
-	
+
 def MakeTipHostTaxDict(des_dict):
 	"makes a list of host taxon present at each tip. These data can be used to make annotation files"
 	host_dict = {}
@@ -216,11 +216,11 @@ def MakeTipHostTaxDict(des_dict):
 				continue
 		host_dict[tip] = sp_list
 	return host_dict
- 			
+
 def MakeCodeFile(ann_dict, out_fp):
 	"Makes code files for input into scripttree"
 	code_file = "%s.%s" %(out_fp, "code")
-	with open(code_file, 'w+') as o1: 
+	with open(code_file, 'w+') as o1:
 		print >> o1, "tree -height 1500 -width 800 -columns 2 -conformation 1 -font {Times 6 italic}"
 		for tip in ann_dict:
 			print >> o1, "query_newick -ql {%s} -hi {-o {lfg sfg} -c %s}" %(tip, ann_dict[tip])
@@ -235,12 +235,12 @@ def MakeAnnotationFile(host_dict, out_fp):
 				print >> o2, "%s accession {%s} hosts {%s}" %(tip,tip,'None')
 			else:
 				print >> o2, "%s accession {%s} hosts {%s}" %(tip,tip,','.join(host_dict[tip]))
-			
+
 	return None
-	
+
 biom_dict= BiomTabParser(biom_fp)
 
-#col_dict = MakeColorDict(biom_dict, species_fp)	
+#col_dict = MakeColorDict(biom_dict, species_fp)
 #00FF00 is lime green
 col_dict = {
 	'Chimp1'     : 'red',

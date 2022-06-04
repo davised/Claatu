@@ -1,21 +1,21 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 
-# Claatu::count_tree -Construct clade lookup tables 
-#Copyright (C) 2015  Christopher A. Gaulke 
+# Claatu::count_tree -Construct clade lookup tables
+#Copyright (C) 2015  Christopher A. Gaulke
 #author contact: gaulkec@science.oregonstate.edu
 #
 #This program is free software: you can redistribute it and/or modify
 #it under the terms of the GNU General Public License as published by
 #the Free Software Foundation, either version 3 of the License, or
 #(at your option) any later version.
-#    
+#
 #This program is distributed in the hope that it will be useful,
 #but WITHOUT ANY WARRANTY; without even the implied warranty of
 #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #GNU General Public License for more details.
-#    
+#
 #You should have received a copy of the GNU General Public License
-#along with this program (see LICENSE.txt).  If not, see 
+#along with this program (see LICENSE.txt).  If not, see
 #<http://www.gnu.org/licenses/>
 
 ####################
@@ -25,7 +25,7 @@
 #   |         |    #
 #    |_______|     #
 #                  #
-####################  
+####################
 
 ###################
 #                 #
@@ -57,10 +57,10 @@ def BiomTabParser(biom):
 	"This function parses a biom file (closed ref OTUS) in tab delim format and creates a dictionary of samples by OTU by count"
 	"""Columns of the table should be samples and rows should be OTUs
 	should ignore lines until matching a line #OTU"""
-	#set pattern	
+	#set pattern
 	my_pattern = re.compile('\#OTU')
 	#read in biom table line by line
-	biom_dict = {} 
+	biom_dict = {}
 	my_header = ""
 	with open(biom) as f:
 		for line in f:
@@ -77,7 +77,7 @@ def BiomTabParser(biom):
 				temp = line.split("\t")
 				for i in range(1,len(temp)):
 					biom_dict[my_header[i]][temp[0]] = temp[i]
-				
+
 	return biom_dict
 
 def TipAncestorLookup(tree):
@@ -86,7 +86,7 @@ def TipAncestorLookup(tree):
 	tip_ancestors = {}
 	#make an iterator for each node and append each ancestor to a list(vals)
 	for node in node_it:
-		ancest_it = node.ancestor_iter(inclusive=False) #get iter for all ancestors	
+		ancest_it = node.ancestor_iter(inclusive=False) #get iter for all ancestors
 		vals = []
 		for ancestor in ancest_it:
 			vals.append(str(ancestor.label))
@@ -94,17 +94,17 @@ def TipAncestorLookup(tree):
 		tip = tip.strip('\'')
 		tip_ancestors[tip] = vals
 	return tip_ancestors
-					
+
 
 def AncestorCrawl(ancestors, pbiom):
 	"This functions collects a list of ancestors of each OTU from a reference tree and assigns the count value of each OTU to the ancestor"
-	"""If there are values in the slot already this function will sum the value"""	
+	"""If there are values in the slot already this function will sum the value"""
 	ancestors = ancestors
 	#Initialize the dict
 	cml_nodes = {}
 	for sample in pbiom:
 		cml_nodes[sample] = {}
-	
+
 	for sample in pbiom:
 		for otu in pbiom[sample]:
 			if otu in ancestors:
@@ -112,17 +112,17 @@ def AncestorCrawl(ancestors, pbiom):
 					if ant in cml_nodes[sample]:
 						cml_nodes[sample][ant] += float(pbiom[sample][otu])
 					else:
-						cml_nodes[sample][ant] = 0 
+						cml_nodes[sample][ant] = 0
 						cml_nodes[sample][ant] += float(pbiom[sample][otu])
-	
+
 	return cml_nodes
-			  
+
 def MakeTable(cml_node_dict, out_fp):
 	"this will make a table from cml_node_dict"
-	#make a pretty(ish) table 
+	#make a pretty(ish) table
 	#my_col_header = ["Sample"]
 	my_col_header =[]
-	my_row_header =[]	
+	my_row_header =[]
 	#sample list
 	for sample in cml_node_dict:
 		my_row_header.append(str(sample))
@@ -138,9 +138,9 @@ def MakeTable(cml_node_dict, out_fp):
 	for sample in my_row_header:
 		print >> f1,"%s\t" % (sample),
 		for i in range(0, len(my_col_header)):
-			if i < (len(my_col_header) - 1): 
+			if i < (len(my_col_header) - 1):
 				print >> f1, "%s\t" % (cml_node_dict[sample][my_col_header[i]]),
-			else: 
+			else:
 				print >> f1, "%s" % (cml_node_dict[sample][my_col_header[i]]),
 		print >> f1, "\n",
 	f1.close()
@@ -149,6 +149,6 @@ def MakeTable(cml_node_dict, out_fp):
 
 my_biom = BiomTabParser(biom_fp)
 tip_an_dict = TipAncestorLookup(tree1)
-cml_node_dict = AncestorCrawl(tip_an_dict, my_biom)	
-MakeTable(cml_node_dict, out_fp)	
+cml_node_dict = AncestorCrawl(tip_an_dict, my_biom)
+MakeTable(cml_node_dict, out_fp)
 

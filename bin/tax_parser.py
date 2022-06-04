@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 
 # Claatu::tax_parser -Gather taxonomic info for nodes
 #Copyright (C) 2015  Christopher A. Gaulke 

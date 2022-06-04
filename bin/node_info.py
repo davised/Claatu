@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 
 # Claatu::node_info -Collect clade info 
 #Copyright (C) 2015  Christopher A. Gaulke 

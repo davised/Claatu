@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 
 # Claatu::prep_tree -Prepares tree for use in Claatu 
 #Copyright (C) 2015  Christopher A. Gaulke 

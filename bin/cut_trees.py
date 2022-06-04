@@ -1,21 +1,21 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 
-# Claatu::cut_trees -make subtrees and node lists 
-#Copyright (C) 2015  Christopher A. Gaulke 
+# Claatu::cut_trees -make subtrees and node lists
+#Copyright (C) 2015  Christopher A. Gaulke
 #author contact: gaulkec@science.oregonstate.edu
 #
 #This program is free software: you can redistribute it and/or modify
 #it under the terms of the GNU General Public License as published by
 #the Free Software Foundation, either version 3 of the License, or
 #(at your option) any later version.
-#    
+#
 #This program is distributed in the hope that it will be useful,
 #but WITHOUT ANY WARRANTY; without even the implied warranty of
 #MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #GNU General Public License for more details.
-#    
+#
 #You should have received a copy of the GNU General Public License
-#along with this program (see LICENSE.txt).  If not, see 
+#along with this program (see LICENSE.txt).  If not, see
 #<http://www.gnu.org/licenses/>
 
 ####################
@@ -25,7 +25,7 @@
 #   |         |    #
 #    |_______|     #
 #                  #
-####################  
+####################
 
 #####################
 #                   #
@@ -69,7 +69,7 @@ def MakeSubtree(tree_fp, node, out_fp):
 				print >> file2, "%s" % (tip)
 			else:
 				print >> file2, "%s" % ("NA")
-				
+
 	return None
 
 def StartCutting(node_list_fp):

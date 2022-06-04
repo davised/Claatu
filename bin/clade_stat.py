@@ -1,6 +1,6 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 
-#This script is the part of the Claatu software package 
+#This script is the part of the Claatu software package
 #These functions might be moved in clade_stat in the future
 
 
@@ -41,8 +41,8 @@ def GetCladeSizes(tree):
 	return size_dict
 
 def AssignOTULabels2Nodes(tree):
-	"This function will assign tax labels to each node" 
-	"Gets tax info from each tip and then assigns to ancestors" 
+	"This function will assign tax labels to each node"
+	"Gets tax info from each tip and then assigns to ancestors"
 	node_it = tree.preorder_internal_node_iter()
 	tips_dict = {}
 	for node in node_it:
@@ -76,7 +76,7 @@ def MapTax2Nodes(tax, node_map):
 			vals.append(tax[otu])
 		otu2tax_dict[node] = vals
 	return otu2tax_dict
-	
+
 def WriteFiles(clade_size, ftax, out_fp):
 	"this will make a table from cml_node_dict"
 	ftax_lab = "{0}/{1}_{2}".format(out_fp, prefix, "nodes2tax.txt")
@@ -96,8 +96,8 @@ def WriteFiles(clade_size, ftax, out_fp):
 	return None
 
 
-clade_sizes = GetCladeSizes(tree1)	
-otu2tax = AssignOTULabels2Nodes(tree1)	
+clade_sizes = GetCladeSizes(tree1)
+otu2tax = AssignOTULabels2Nodes(tree1)
 tax_dict = BuildTaxDict(tax_fp)
 big_dict = MapTax2Nodes(tax_dict, otu2tax)
 WriteFiles(clade_sizes, big_dict, out_fp)
